@@ -1219,30 +1219,35 @@
     }
   }
 
+  function showSimpleNotification(name) {
+    document.getElementById("toastName").textContent = t("prayers." + name) + " — " + ARABIC[name];
+    document.getElementById("simpleToast").classList.add("open");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 8000);
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    try {
+      new Notification(t("itsTime") + " — " + t("prayers." + name), {
+        body: ARABIC[name],
+        tag: "adhan-notify-" + name,
+        silent: true,
+        icon: new URL("icons/icon.svg", location.href).href
+      });
+    } catch (e) {}
+  }
+
   function triggerAlert(name) {
     var mode = state.alertMode || "off";
     if (mode === "off") return;
+    audio.pause();
     if (mode === "adhan") {
       document.getElementById("adhanName").textContent = t("prayers." + name);
       document.getElementById("adhanArabic").textContent = ARABIC[name];
       document.getElementById("adhanOverlay").classList.add("open");
       playAdhanSound();
-    } else {
-      document.getElementById("toastName").textContent = t("prayers." + name) + " — " + ARABIC[name];
-      document.getElementById("simpleToast").classList.add("open");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(hideToast, 12000);
+      return;
     }
-    if ("Notification" in window && Notification.permission === "granted") {
-      try {
-        new Notification(t("itsTime") + " — " + t("prayers." + name), {
-          body: ARABIC[name],
-          tag: "adhan-" + name,
-          silent: mode !== "adhan",
-          icon: "icons/icon.svg"
-        });
-      } catch (e) {}
-    }
+    document.getElementById("adhanOverlay").classList.remove("open");
+    showSimpleNotification(name);
   }
 
   function hideToast() {
@@ -1418,10 +1423,8 @@
     });
     document.getElementById("testAdhan").addEventListener("click", function () {
       var name = nextInfo(new Date()).name;
-      document.getElementById("adhanName").textContent = t("prayers." + name);
-      document.getElementById("adhanArabic").textContent = ARABIC[name];
-      document.getElementById("adhanOverlay").classList.add("open");
-      playAdhanSound();
+      triggerAlert(name);
+      if (state.alertMode === "notify") enableAlertsIfNeeded("notify");
     });
     document.getElementById("stopAdhan").addEventListener("click", stopAdhan);
     document.getElementById("dismissToast").addEventListener("click", hideToast);

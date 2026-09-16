@@ -1,11 +1,11 @@
-const CACHE = "adhan-v16";
+const CACHE = "adhan-v17";
 const ASSETS = [
   "./",
   "./index.html",
   "./css/app.css",
-  "./css/app.css?v=16",
+  "./css/app.css?v=17",
   "./js/app.js",
-  "./js/app.js?v=16",
+  "./js/app.js?v=17",
   "./js/adhan.umd.min.js",
   "./manifest.webmanifest",
   "./icons/icon.svg"
