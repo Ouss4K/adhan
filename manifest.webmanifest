@@ -1,0 +1,21 @@
+{
+  "name": "Adhan — Horaires de prière",
+  "short_name": "Adhan",
+  "description": "Horaires de prière et dou'as pour PC et téléphone.",
+  "start_url": "/adhan/",
+  "scope": "/adhan/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070b1a",
+  "theme_color": "#070b1a",
+  "lang": "fr",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

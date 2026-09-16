@@ -1,0 +1,4 @@
+<IfModule mod_headers.c>
+  Header always set Permissions-Policy "accelerometer=(self), gyroscope=(self), magnetometer=(self)"
+  Header always set Feature-Policy "accelerometer 'self'; gyroscope 'self'; magnetometer 'self'"
+</IfModule>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Adhan — Horaires de prière</title>
+  <meta name="description" content="Horaires de prière islamiques, adhan et dou'as. Fonctionne sur ordinateur et téléphone.">
+  <link rel="canonical" href="https://it-support.ovh/adhan/">
+  <meta name="theme-color" content="#070b1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Adhan">
+  <meta property="og:title" content="Adhan — Horaires de prière">
+  <meta property="og:description" content="Horaires de prière et dou'as pour musulmans, sur PC et téléphone.">
+  <meta property="og:url" content="https://it-support.ovh/adhan/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=16">
+</head>
+<body>
+  <canvas class="sky" id="sky" aria-hidden="true"></canvas>
+  <div class="app">
+    <aside class="side-nav" aria-label="Navigation">
+      <div class="brand">
+        <img src="icons/icon.svg" alt="">
+        <div>
+          <div class="brand-title">Adhan</div>
+          <span class="brand-sub" data-i18n="tagline">Horaires de prière</span>
+        </div>
+      </div>
+      <p class="bismillah">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ</p>
+      <nav class="nav-stack" data-nav></nav>
+      <div class="side-footer">
+        <div class="side-next">
+          <small data-i18n="nextPrayer">Prochaine prière</small>
+          <strong id="sideNextName">—</strong>
+          <span id="sideNextTime">--:--:--</span>
+        </div>
+        <p class="footer-note"><a href="https://it-support.ovh/">IT Support Strasbourg</a></p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="location-btn" id="openLocation" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+          <span>
+            <strong id="cityName">Strasbourg</strong>
+            <span id="cityMeta" data-i18n="changeLocation">Changer de ville</span>
+          </span>
+        </button>
+        <div class="topbar-actions">
+          <div class="now-clock" aria-hidden="true">
+            <strong id="nowTime">--:--:--</strong>
+            <span id="nowDateShort"></span>
+          </div>
+          <button class="icon-btn" id="themeToggle" type="button" aria-label="Theme">◐</button>
+        </div>
+      </header>
+
+      <section class="panel active" id="panel-times" data-panel="times">
+        <div class="times-layout">
+          <article class="hero">
+            <div class="hero-next">
+              <div class="label" data-i18n="nextPrayer">Prochaine prière</div>
+              <p class="arabic-name" id="nextArabic">—</p>
+              <h1 id="nextName">—</h1>
+            </div>
+            <div class="countdown" id="countdown">--:--:--</div>
+            <div class="hero-meta">
+              <div class="dates">
+                <span id="gregorianDate"></span>
+                <span id="hijriDate"></span>
+              </div>
+            </div>
+            <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+          </article>
+          <div class="prayer-list" id="prayerList"></div>
+          <article class="dua-card" id="duaCard">
+            <div class="dua-head">
+              <span class="label" data-i18n="duaTitle">Dou'a</span>
+              <span class="dua-tag" id="duaTag"></span>
+            </div>
+            <p class="dua-arabic" id="duaArabic" dir="rtl" lang="ar"></p>
+            <p class="dua-meaning" id="duaMeaning"></p>
+            <div class="dua-nav">
+              <button class="icon-btn dua-arrow" id="duaPrev" type="button" aria-label="Previous">‹</button>
+              <div class="dua-dots" id="duaDots"></div>
+              <button class="icon-btn dua-arrow" id="duaNext" type="button" aria-label="Next">›</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-settings" data-panel="settings">
+        <h1 class="section-title" data-i18n="settingsTitle">Réglages</h1>
+        <div class="settings">
+          <div class="settings-col">
+          <div class="field">
+            <label for="langSelect" data-i18n="language">Langue</label>
+            <select id="langSelect">
+              <option value="fr">Français</option>
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+            </select>
+          </div>
+
+          <h2 class="settings-heading" data-i18n="sectionMawaqit">Mosquée (Mawaqit)</h2>
+          <p class="field-help" data-i18n="mawaqitHelp">Les horaires officiels de votre mosquée, comme sur l'écran Mawaqit.</p>
+          <label class="toggle">
+            <span data-i18n="mawaqitEnable">Utiliser les horaires Mawaqit</span>
+            <input id="mawaqitToggle" type="checkbox">
+          </label>
+          <div id="mawaqitBox" class="hidden">
+            <div class="mawaqit-selected" id="mawaqitSelected"></div>
+            <div class="field">
+              <label for="mawaqitSearch" data-i18n="mawaqitSearch">Rechercher une mosquée</label>
+              <input id="mawaqitSearch" type="search" autocomplete="off" data-i18n-placeholder="mawaqitSearchPh" placeholder="Grande Mosquée, Strasbourg…">
+            </div>
+            <button class="ghost" id="mawaqitNearby" type="button" data-i18n="mawaqitNearby">Mosquées autour de moi</button>
+            <div class="city-list" id="mawaqitResults"></div>
+            <label class="toggle">
+              <span data-i18n="mawaqitIqama">Afficher l'iqama</span>
+              <input id="iqamaToggle" type="checkbox">
+            </label>
+          </div>
+
+          <div id="calcTimesFields">
+            <h2 class="settings-heading" data-i18n="sectionTimes">Horaires selon le pays</h2>
+            <div class="field">
+              <label for="methodSelect" data-i18n="method">Méthode de calcul</label>
+              <select id="methodSelect"></select>
+              <p class="field-help" id="methodHint"></p>
+            </div>
+            <div class="field">
+              <label for="madhabSelect" data-i18n="madhab">École pour Asr</label>
+              <select id="madhabSelect">
+                <option value="shafi">Shafi / Maliki / Hanbali</option>
+                <option value="hanafi">Hanafi</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="highLatSelect" data-i18n="highLat">Hautes latitudes</label>
+              <select id="highLatSelect">
+                <option value="auto" data-i18n="highLatAuto">Automatique</option>
+                <option value="middle" data-i18n="highLatMiddle">Milieu de la nuit</option>
+                <option value="seventh" data-i18n="highLatSeventh">1/7 de la nuit</option>
+                <option value="angle" data-i18n="highLatAngle">Angle du crépuscule</option>
+              </select>
+            </div>
+            <div class="field">
+              <label data-i18n="offsets">Ajustement (minutes)</label>
+              <p class="field-help" data-i18n="offsetHelp">Décalez chaque prière pour coller à votre mosquée.</p>
+              <div class="offset-grid">
+                <label><span data-i18n="prayers.fajr">Fajr</span><input id="offsetFajr" type="number" min="-15" max="30" step="1" value="0"></label>
+                <label><span data-i18n="prayers.dhuhr">Dhuhr</span><input id="offsetDhuhr" type="number" min="-15" max="30" step="1" value="0"></label>
+                <label><span data-i18n="prayers.asr">Asr</span><input id="offsetAsr" type="number" min="-15" max="30" step="1" value="0"></label>
+                <label><span data-i18n="prayers.maghrib">Maghrib</span><input id="offsetMaghrib" type="number" min="-15" max="30" step="1" value="0"></label>
+                <label><span data-i18n="prayers.isha">Isha</span><input id="offsetIsha" type="number" min="-15" max="30" step="1" value="0"></label>
+              </div>
+            </div>
+          </div>
+          <label class="toggle">
+            <span data-i18n="hour12">Format 12 heures</span>
+            <input id="hour12Toggle" type="checkbox">
+          </label>
+          </div>
+
+          <div class="settings-col">
+          <h2 class="settings-heading" data-i18n="sectionAlerts">Alerte de prière</h2>
+          <div class="alert-choices" role="radiogroup" aria-label="Alert type">
+            <label class="alert-choice">
+              <input type="radio" name="alertMode" value="off">
+              <span>
+                <strong data-i18n="alertOff">Aucune alerte</strong>
+                <small data-i18n="alertOffHelp">Pas de son ni de notification</small>
+              </span>
+            </label>
+            <label class="alert-choice">
+              <input type="radio" name="alertMode" value="notify">
+              <span>
+                <strong data-i18n="alertNotify">Notification simple</strong>
+                <small data-i18n="alertNotifyHelp">Un rappel discret, sans adhan</small>
+              </span>
+            </label>
+            <label class="alert-choice">
+              <input type="radio" name="alertMode" value="adhan">
+              <span>
+                <strong data-i18n="alertAdhan">Jouer l'adhan</strong>
+                <small data-i18n="alertAdhanHelp">Son de l'appel à la prière</small>
+              </span>
+            </label>
+          </div>
+          <div id="adhanOptions" class="hidden">
+            <div class="field">
+              <label for="volume" data-i18n="volume">Volume</label>
+              <input id="volume" type="range" min="0" max="1" step="0.05" value="0.9">
+            </div>
+          </div>
+          <button class="primary" id="testAdhan" type="button" data-i18n="testAlert">Tester l'alerte</button>
+          <p class="footer-note" id="creditNote" data-i18n="credit">Horaires calculés sur votre appareil. Laissez l'onglet ouvert pour les alertes.</p>
+          <p class="footer-note"><a href="https://it-support.ovh/">IT Support Strasbourg</a></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" data-nav aria-label="Main"></nav>
+  </div>
+
+  <div class="overlay" id="locationModal" role="dialog" aria-modal="true" aria-labelledby="locTitle">
+    <div class="sheet">
+      <h2 id="locTitle" data-i18n="chooseCity">Choisir une ville</h2>
+      <p class="hint" data-i18n="locationHelp">Sur ordinateur, tapez votre ville. Sur téléphone, vous pouvez aussi utiliser la position GPS.</p>
+      <button class="primary" id="useGps" type="button" data-i18n="useGps">Utiliser ma position</button>
+      <div class="field" style="margin-top:14px">
+        <input class="search" id="citySearch" type="search" autocomplete="off" data-i18n-placeholder="cityPlaceholder" placeholder="Strasbourg, Paris, Alger…">
+      </div>
+      <div class="chips" id="cityChips"></div>
+      <div class="city-list" id="cityResults" style="margin-top:12px"></div>
+      <button class="ghost" id="closeLocation" type="button" style="margin-top:14px;width:100%" data-i18n="close">Fermer</button>
+    </div>
+  </div>
+
+  <div class="adhan-overlay" id="adhanOverlay">
+    <div class="adhan-card">
+      <div class="label" data-i18n="itsTime">C'est l'heure</div>
+      <p class="arabic-name" id="adhanArabic"></p>
+      <h2 id="adhanName"></h2>
+      <button class="primary" id="stopAdhan" type="button" data-i18n="stop">Arrêter</button>
+    </div>
+  </div>
+
+  <div class="toast" id="simpleToast" role="status">
+    <div>
+      <div class="label" data-i18n="itsTime">C'est l'heure</div>
+      <strong id="toastName"></strong>
+    </div>
+    <button class="ghost" id="dismissToast" type="button" data-i18n="dismiss">OK</button>
+  </div>
+
+  <audio id="adhanAudio" preload="auto" playsinline>
+    <source src="audio/adhan.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="js/adhan.umd.min.js"></script>
+  <script src="js/app.js?v=16"></script>
+</body>
+</html>
